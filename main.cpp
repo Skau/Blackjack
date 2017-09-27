@@ -278,7 +278,6 @@ int drawCards (int &mi, int &ma, bool &a, int deckArray[][13], int &number, int 
     else if (card > 10)
     {
         cout << "The dealer draws you a " << cardName <<  " of " << suitName << ".\n";
-        cout << "This equals to 10.\n";
         card = 10;
         currentHand += card;
     }
@@ -305,14 +304,6 @@ int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, i
 
     // gir spilleren to kort
     pHand = drawCards(mi, ma, a, deckArray, number, suit);
-    if (a == true)
-    {
-       cout << "Current hand: 1 / 11.\n";
-    }
-    else
-    {
-        cout << "Current hand: " << pHand << ".\n";
-    }
     pHand += drawCards(mi, ma, a, deckArray, number, suit);
     if (a == true)
     {
@@ -536,7 +527,6 @@ int houseTurn(int &hHand, int &pHand, int &mi, int &ma, int deckArray[][13], int
             else if (card > 10)
             {
                 cout << "The dealer picked a " << cardName << " of " << suitName << ".\n";
-                cout << "This equals to 10\n";
                 card = 10;
             }
             else
@@ -544,7 +534,7 @@ int houseTurn(int &hHand, int &pHand, int &mi, int &ma, int deckArray[][13], int
                 cout << "The dealer picked " << card << " of " << suitName << ".\n";
             }
             hHand += card;
-            cout << "Dealers hand: " << hHand << ".\n\n";
+            cout << "Dealers current hand: " << hHand << ".\n\n";
             continuePlay = true;
         }
         // hvis husets hånd er større enn spillerens
