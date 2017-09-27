@@ -29,7 +29,7 @@ int main()
 
     srand(time(0));
 
-    cout << "Welcome to blackjack, Las Vegas style.\n";
+    cout << "Welcome to blackjack.\n";
     cout << "The game will simulate a true deck of cards.\n";
     cout << "Aces are valued at both 1 and 11. Soft/hard hands are implemented.\n";
     cout << "Knight, queen and king are all valued at 10.\n";
@@ -64,55 +64,40 @@ int main()
         // spillerens tur
         cout << "You have $" << pMoney << ".\n";
         cout << "Current bet $" << pBet << ".\n";
-        cout << "Do you want to change your bet? (Y/N)\n";
+        cout << "Type bet to change it. Any key to start your turn.\n";
         cin >> playagainAnswer;
-        if (playagainAnswer == "y" || playagainAnswer == "Y")
+        if (playagainAnswer == "bet" || playagainAnswer == "BET")
         {
             bettingTime = true;
-            cout << "When you are done changing your bet, press 7 and enter. The game will then begin.\n";
+            cout << "---------------------------------------\n\n";
+            cout << "Enter 3 to confirm bet. The game will then begin.\n";
             // en loop så man kan bestemme seg over hvor mye man vil vedde
             while (bettingTime == true)
             {
                 cout << "Current bet: $" << pBet << ".\n"
-                        "1. Increase by $10\n"
-                        "2. Increase by $20\n"
-                        "3. Decrease by $10\n"
-                        "4. Decrease by $20\n"
-                        "5. All in\n"
-                        "6. Custom amount\n"
-                        "7. Confirm bet\n";
-                cout << "You have $" << pMoney << ".\n";
+                        "1. Enter amount\n"
+                        "2. All in\n"
+                        "3. Confirm bet\n";
+                cout << "You have $" << pMoney << ".\n\n";
+                cout << "---------------------------------------\n";
                 cin >> betAnswer;
                 switch (betAnswer)
                 {
                 case 1 :
-                    pBet += 10;
-                    cout << "Increased your bet by $10.\n";
-                    break;
-                case 2 :
-                    pBet += 20;
-                    cout << "Increased your bet by $20.\n";
-                    break;
-                case 3 :
-                    pBet -= 10;
-                    cout << "Decreased your bet by $10.\n";
-                    break;
-                case 4 :
-                    pBet -= 20;
-                    cout << "Decreased your bet by $20.\n";
-                    break;
-                case 5 :
-                    pBet = pMoney;
-                    cout << "You're going all in.\n";
-                    break;
-                case 6 :
                 {
                     cout << "Enter the amount you wish to bet.\n";
                     cout << "You have $" << pMoney << ".\n";
                     cin >> betAnswer;
                     pBet = betAnswer;
+                    break;
                 }
-                case 7 :
+                case 2 :
+                {
+                    pBet = pMoney;
+                    cout << "You're going all in.\n";
+                    break;
+                }
+                case 3 :
                 {
                     if (pBet > pMoney) {
                         cout << "Cannot bet more than you currently have.\n";
@@ -148,6 +133,7 @@ int main()
         {
             if (naturalB == true)
             {
+                cout << "-----------------------------------\n\n";
                 cout << "You won a natural Blackjack. 50% higher payout!\n";
                 pBet = pBet * 1.5;
                 cout << "You won $" << pBet << ".\n";
@@ -155,6 +141,8 @@ int main()
             }
             else
             {
+                cout << "-----------------------------------\n\n";
+                cout << "PLAYER: " << pHand << " / " << "DEALER: " << hHand << endl;
                 cout << "You won: $" << pBet << ".\n";
                 pMoney += pBet;
             }
@@ -163,6 +151,8 @@ int main()
         // spilleren taper hvis huset har høyest hånd
         else if (win == 2)
         {
+            cout << "-----------------------------------\n\n";
+            cout << "PLAYER: " << pHand << " / " << "DEALER: " << hHand << endl;
             cout << "You lost: $" << pBet << ".\n";
             pMoney -= pBet;
             playGame = false;
@@ -170,6 +160,8 @@ int main()
         // hvis huset får lik hånd som spilleren blir det uavgjort
         else if (win == 3)
         {
+            cout << "-----------------------------------\n\n";
+            cout << "PLAYER: " << pHand << " / " << "DEALER: " << hHand << endl;
             cout << "It's a draw.\n";
             playGame = false;
         }
@@ -187,6 +179,7 @@ int main()
                 hHand = 0;
                 pMoney = 100;
                 pBet = 10;
+                cout << "-----------------------------------\n\n";
             }
             else
             {
@@ -323,6 +316,8 @@ int playerTurn(int &pHand, int &hHand, int &mi, int &ma, int deckArray[][13], in
     string cardName;
     bool stopPlay = false;
 
+    cout << "-----------------------------------\n";
+    cout << "PLAYER\n\n";
     // gir spilleren to kort
     pHand = drawCards(mi, ma, a, deckArray, number, suit, dCard);
     pHand += drawCards(mi, ma, a, deckArray, number, suit, dCard);
@@ -522,11 +517,14 @@ int houseTurn(int &hHand, int &pHand, int &mi, int &ma, int deckArray[][13], int
     mi = 1;
     mi = 13;
 
+    cout << "-----------------------------------\n";
+    cout << "DEALER\n\n";
+    cout << "Dealers current hand: " << hHand << ".\n";
     // summen ai må nå er mer enn playerHand og 21 eller mindre. Huset kan ikke trekke et kort til hvis summen er over 17
     while (hHand < 22 && continuePlay == true)
     {
         // trekk kort
-        if (hHand < pHand && hHand < 17)
+        if (hHand <= pHand && hHand < 17)
         {
             card = getrandomCard(mi, ma, deckArray, number, suit);
             switch(suit){
