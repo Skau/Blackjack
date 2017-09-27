@@ -5,13 +5,13 @@ using namespace std;
 
 // deklarasjoner
 int getrandomCard(int &mi, int &ma, int deckArray[][13], int &number, int &suit);
-int drawCards(int &mi, int &ma, int &pHand, int deckArray[][13], bool &a, int &number, int &suit);
-int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, int &suit, bool &natB, bool &a);
+int drawCards(int &mi, int &ma, int &pHand, int deckArray[][13], int &number, int &suit, bool &a, bool &dCard);
+int playerTurn(int &pHand, int &hHand, int &mi, int &ma, int deckArray[][13], int &number, int &suit, bool &natB, bool &a, bool &dCard);
 int houseTurn(int &hHand, int &playerHand, int &mi, int &ma, int deckArray[][13], int &number, int &suit, bool &housea);
 
 // main funksjonen
 int main()
-{
+{        
     int cardSuit;
     int cardNumber;
     int win = 0;
@@ -24,19 +24,19 @@ int main()
     int betAnswer;
     bool playGame = true;
     bool bettingTime = false;
+    bool dealersCard = false;
     string playagainAnswer;
 
     srand(time(0));
 
-    cout << "Welcome to blackjack.\n";
-    cout << "This version is trying to use as many as the regular Las Vegas rules as possible.\n";
+    cout << "Welcome to blackjack, Las Vegas style.\n";
     cout << "The game will simulate a true deck of cards.\n";
-    cout << "Aces are valued at both 1 and 11. Soft/hard hands are enabled in this version\n";
+    cout << "Aces are valued at both 1 and 11. Soft/hard hands are implemented.\n";
     cout << "Knight, queen and king are all valued at 10.\n";
     cout << "The goal is to get to 21, or as close as possible. The dealer will then play and try to beat you.\n";
+    cout << "You can see the dealers first card during your turn by typing dealer.\n";
     cout << "The dealer will not draw any more cards after reaching the sum 17 or higher.\n";
-    cout << "If you get 21 from the first two cards you recieve, you will get a natural blackjack. This gives 50% higher payout.\n";
-    cout << "WIP: You can see one of the dealers cards during your turn.\n\n";
+    cout << "If you get 21 from the first two cards you initially recieve, you will get a natural blackjack. This gives 50% higher payout.\n\n";
     cout << "To play you have to bet a minimum of $10.\n";
 
     // selve spillets loop
@@ -59,6 +59,7 @@ int main()
         bool &a = ace;
         bool houseAce = false;
         bool &housea = houseAce;
+        bool &dCard = dealersCard;
 
         // spillerens tur
         cout << "You have $" << pMoney << ".\n";
@@ -110,7 +111,6 @@ int main()
                     cout << "You have $" << pMoney << ".\n";
                     cin >> betAnswer;
                     pBet = betAnswer;
-                    break;
                 }
                 case 7 :
                 {
@@ -133,7 +133,7 @@ int main()
             }
         }
         // kjører spillerfunksjonen
-        win = playerTurn(pHand, mi, ma, deckArray, number, suit, natB, a);
+        win = playerTurn(pHand, hHand, mi, ma, deckArray, number, suit, natB, a, dCard);
         // hvis spilleren har stoppet selv er det huset sin tur
         if (win == 0)
         {
@@ -176,7 +176,7 @@ int main()
         // hvis spilleren er tom for penger, er spillet over
         if (pMoney <= 0)
         {
-            cout << "You are out of cash. Better luck next time!\n";
+            cout << "You are out of cash.\n";
             // muligheten til å starte på nytt
             cout << "Do you want to start over? (Y/N)\n";
             cin >> playagainAnswer;
@@ -215,7 +215,6 @@ int getrandomCard(int &mi, int &ma, int deckArray[][13], int &number, int &suit)
         mi = 1;
         ma = 4;
         suit = mi + rand() % ((ma - mi ));
-        mi = 1;
         ma = 13;
         number = mi + rand() % ((ma - mi ));
         if(deckArray[suit][number] == x)
@@ -233,7 +232,7 @@ int getrandomCard(int &mi, int &ma, int deckArray[][13], int &number, int &suit)
 }
 
 // trekker kortet
-int drawCards (int &mi, int &ma, bool &a, int deckArray[][13], int &number, int &suit)
+int drawCards (int &mi, int &ma, bool &a, int deckArray[][13], int &number, int &suit, bool &dCard)
 {
     int card = 0;
     int currentHand = 0;
@@ -267,31 +266,54 @@ int drawCards (int &mi, int &ma, bool &a, int deckArray[][13], int &number, int 
         cardName = "king";
         break;
     }
-    // ess
-    if (card == 1)
+    if (dCard == true)
     {
-        cout << "The dealer draws you an ace of " << suitName << ".\n";
-        currentHand += card;
-        a = true;
+        // ess
+        if (card == 1)
+        {
+            currentHand += card;
+            a = true;
+        }
+        // bildekort
+        else if (card > 10)
+        {
+            card = 10;
+            currentHand += card;
+        }
+        // kort 2-10
+        else
+        {
+            currentHand += card;
+        }
     }
-    // bildekort
-    else if (card > 10)
-    {
-        cout << "The dealer draws you a " << cardName <<  " of " << suitName << ".\n";
-        card = 10;
-        currentHand += card;
-    }
-    // kort 2-10
     else
     {
-        cout << "The dealer draws you a " << card << " of " << suitName << ".\n";
-        currentHand += card;
+        // ess
+        if (card == 1)
+        {
+            cout << "The dealer draws you an ace of " << suitName << ".\n";
+            currentHand += card;
+            a = true;
+        }
+        // bildekort
+        else if (card > 10)
+        {
+            cout << "The dealer draws you a " << cardName <<  " of " << suitName << ".\n";
+            card = 10;
+            currentHand += card;
+        }
+        // kort 2-10
+        else
+        {
+            cout << "The dealer draws you a " << card << " of " << suitName << ".\n";
+            currentHand += card;
+        }
     }
     return currentHand;
 }
 
 // spillerens funksjon
-int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, int &suit, bool &natB, bool &a)
+int playerTurn(int &pHand, int &hHand, int &mi, int &ma, int deckArray[][13], int &number, int &suit, bool &natB, bool &a, bool &dCard)
 {
     // deklarerer variabler
     int card;
@@ -301,10 +323,13 @@ int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, i
     string cardName;
     bool stopPlay = false;
 
-
     // gir spilleren to kort
-    pHand = drawCards(mi, ma, a, deckArray, number, suit);
-    pHand += drawCards(mi, ma, a, deckArray, number, suit);
+    pHand = drawCards(mi, ma, a, deckArray, number, suit, dCard);
+    pHand += drawCards(mi, ma, a, deckArray, number, suit, dCard);
+    // gir huset et kort uten å vise det, derav boolen
+    dCard = true;
+    hHand = drawCards(mi, ma, a, deckArray, number, suit, dCard);
+    dCard = false;
     if (a == true)
     {
         cout << "Soft hand: " << pHand << " / " << pHand+10 << ".\n";
@@ -321,14 +346,12 @@ int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, i
     // spiller loop
     while (pHand < 22 && !stopPlay)
     {
+        dCard = false;
         // spør om man vil plukke et kort
-        cout << "\nPick a new card? (Y/N)\n";
+        cout << "\nNew card (Y/N) / To make the dealer draw his first card, type dealer (lower case).\n";
         cin >> continueAnswer;
-        if (continueAnswer == "Y" || continueAnswer == "y")
+        if (continueAnswer == "dealer")
         {
-            // trekker et kort
-            card = drawCards(mi, ma, a, deckArray, number, suit);
-
             switch(suit){
             case 1:
                 suitName = "spades";
@@ -353,6 +376,27 @@ int playerTurn(int &pHand, int &mi, int &ma, int deckArray[][13], int &number, i
                 cardName = "king";
                 break;
             }
+
+            // ess
+            if (card == 1)
+            {
+               cout << "Dealers first card is ace of " << suitName << ".\n";
+            }
+            // bildekort
+            else if (hHand > 10)
+            {
+                cout << "Dealers first card is " << cardName << " of " << suitName << ".\n";
+            }
+            // kort 2-10
+            else
+            {
+                cout << "Dealers first card is " << hHand << " of " << suitName << ".\n";
+            }
+        }
+        else if (continueAnswer == "Y" || continueAnswer == "y")
+        {
+            // trekker et kort
+            card = drawCards(mi, ma, a, deckArray, number, suit, dCard);
             if (a == true)
             {
                 // hvis kortet blir mer enn 10 så er det et bildekort
@@ -482,7 +526,7 @@ int houseTurn(int &hHand, int &pHand, int &mi, int &ma, int deckArray[][13], int
     while (hHand < 22 && continuePlay == true)
     {
         // trekk kort
-        if (hHand <= pHand && hHand < 17)
+        if (hHand < pHand && hHand < 17)
         {
             card = getrandomCard(mi, ma, deckArray, number, suit);
             switch(suit){
@@ -537,12 +581,16 @@ int houseTurn(int &hHand, int &pHand, int &mi, int &ma, int deckArray[][13], int
             cout << "Dealers current hand: " << hHand << ".\n\n";
             continuePlay = true;
         }
-        // hvis husets hånd er større enn spillerens
-        // og mer enn 16, vinner huset
-        else if (hHand > pHand && hHand > 16)
+        // hvis husets hånd er større enn spilleren
+        // vinner huset
+        else if (hHand > pHand)
         {
             continuePlay = false;
             return 2;
+        }
+        else if (hHand > pHand && hHand < 11)
+        {
+            continuePlay = true;
         }
         // Hvis husets hånd mer enn 16, men fortsatt lavere enn spilleren
         // vinner spilleren
