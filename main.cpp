@@ -343,7 +343,7 @@ int playerTurn(int &pHand, int &hHand, int &mi, int &ma, int deckArray[][13], in
     {
         dCard = false;
         // spør om man vil plukke et kort
-        cout << "\nNew card (Y/N) / To make the dealer draw his first card, type dealer (lower case).\n";
+        cout << "New card (Y/N) / To make the dealer draw his first card, type dealer (lower case).\n";
         cin >> continueAnswer;
         if (continueAnswer == "dealer")
         {
